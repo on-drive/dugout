@@ -42,18 +42,18 @@ server.bind((IP_address, Port))
 listens for 100 active connections. This number can be
 increased as per convenience.
 """
-server.listen(100)
+server.listen(2)
 
 list_of_clients = []
 
 def clientthread(conn, addr):
 
 	# sends a message to the client whose user object is conn
-	conn.send("Welcome to this chatroom!")
+	conn.send("Welcome to this chatroom!".encode('utf-8'))
 
 	while True:
 			try:
-				message = conn.recv(2048)
+				message = conn.recv(2048).decode('utf-8')
 				if message:
 
 					"""prints the message and address of the
@@ -62,7 +62,7 @@ def clientthread(conn, addr):
 					print ("<" + addr[0] + "> " + message)
 
 					# Calls broadcast function to send message to all
-					message_to_send = "<" + addr[0] + "> " + message
+					message_to_send =( "<" + addr[0] + "> " + message).encode('utf-8')
 					broadcast(message_to_send, conn)
 
 				else:
@@ -70,8 +70,8 @@ def clientthread(conn, addr):
 					is broken, in this case we remove the connection"""
 					remove(conn)
 
-			except:
-				continue
+			except Exception as e:
+				print(e)
 
 """Using the below function, we broadcast the message to all
 clients who's object is not the same as the one sending
