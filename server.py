@@ -1,4 +1,5 @@
 # Python program to implement server side of chat room.
+from os import name
 import socket
 import select
 import sys
@@ -22,27 +23,31 @@ Port = int(sys.argv[1])
 server.bind((IP_address, Port))
 
 server.listen(2)
+print("Waiting for connections !!!")
 
 list_of_clients = []
+# ip_name_dict = {}
 
 
 def clientthread(conn, addr):
 
     # sends a message to the client whose user object is conn
     conn.send(b'Welcome to this chatroom!')
-    conn.send(b'Choose your room')
+    conn.send(b' What should we call you ')
 
     while True:
         try:
+
+            name = conn.recv(1024).decode('utf-8')
+
             message = conn.recv(1024).decode('utf-8')
             if message:
 
-                print("<" + addr[0] + "> " + message)
+                print(name+message)
 
                 # Calls broadcast function to send message to all
                 # message1 = str(message)
-                message_to_send = (
-                    "<" + addr[0] + "> " + message).encode('utf-8')
+                message_to_send = (name + " - "+message).encode('utf-8')
                 broadcast(message_to_send, conn)
 
             else:
@@ -88,7 +93,7 @@ while True:
 
     list_of_clients.append(conn)
 
-    print(str(addr[1]) + " connected")
+    print((addr[0]) + " connected")
 
     # creates and individual thread for every user
     # that connects

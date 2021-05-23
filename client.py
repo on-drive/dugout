@@ -9,6 +9,7 @@ if len(sys.argv) != 2:
 IP_address = socket.gethostbyname(socket.gethostname())
 Port = int(sys.argv[1])
 server.connect((IP_address, Port))
+ip_name_dict = {}
 
 while True:
 
@@ -32,10 +33,18 @@ while True:
             print(message)
 
         else:
-            message = sys.stdin.readline()
 
+            try:
+                user_name = input("")
+                ip_name_dict[IP_address] = user_name.splitlines()[0]
+            except:
+                user_name = ip_name_dict[IP_address]
+
+            server.send(user_name.encode('utf-8'))
+
+            message = input("enter your message")
             server.send(message.encode('utf-8'))
-            sys.stdout.write("<You>")
-            sys.stdout.write(message)
-            sys.stdout.flush()
+            print(ip_name_dict[IP_address]+" - "+message)
+
+            # sys.stdout.flush()
 server.close()
