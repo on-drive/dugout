@@ -30,6 +30,7 @@ def clientthread(conn, addr):
 
     # sends a message to the client whose user object is conn
     conn.send(b'Welcome to this chatroom!')
+    conn.send(b'Choose your room')
 
     while True:
         try:
@@ -87,11 +88,12 @@ while True:
 
     list_of_clients.append(conn)
 
-    print(addr[0] + " connected")
+    print(str(addr[1]) + " connected")
 
     # creates and individual thread for every user
     # that connects
     start_new_thread(clientthread, (conn, addr))
+
 
 conn.close()
 server.close()
