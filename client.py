@@ -3,7 +3,7 @@ import select
 import sys
 
 HEADER = 1024
-PORT = 5050
+PORT = 5052
 FORMAT = "utf-8"
 # DISCONNECT_MESSAGE = "!DISCONNECT"
 IP_ADD = "192.168.55.221"
@@ -28,11 +28,11 @@ while True:
 
     for socks in read_sockets:
         if socks == client:
-            message = socks.recv(HEADER)
+            message = socks.recv(HEADER).decode(FORMAT)
             print(message)
         else:
             message = sys.stdin.readline()
-            client.send(message)
+            client.send(message.encode(FORMAT))
             sys.stdout.write("<You>")
             sys.stdout.write(message)
             sys.stdout.flush()

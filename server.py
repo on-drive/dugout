@@ -1,10 +1,9 @@
 import socket
 import threading
-import _thread
-from _thread import start_new_thread
+from _thread import *
 
 HEADER = 1024
-PORT = 5050
+PORT = 5052
 IP_ADD = socket.gethostbyname(socket.gethostname())
 ADDR = (IP_ADD, PORT)
 FORMAT = "utf-8"
@@ -13,14 +12,14 @@ FORMAT = "utf-8"
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDR)
 
-server.listen(5)
+server.listen(2)
 
 clients_list = []
 
 
 def handle_client(conn, addr):
     # print(f"[NEW CONNECTION] {addr} connected.")
-    conn.send("Welcome to baba ka dugout")
+    conn.send("Welcome to baba ka dugout".encode(FORMAT))
     connected = True
     # while connected:
     #     # msg_length = conn.recv(HEADER).decode(FORMAT)
@@ -36,12 +35,12 @@ def handle_client(conn, addr):
             msg = conn.recv(HEADER)
             if msg:
                 print(f"[{addr} ] - {msg}")
-                message_to_send = f"[{addr}] - {msg}"
+                message_to_send = ("[{addr}] - {msg}").encode(FORMAT)
                 broadcast(message_to_send, conn)
             else:
                 remove(conn)
-        except:
-            continue
+        except Exception as e:
+            print(e)
 
 
 def broadcast(message, connection):
