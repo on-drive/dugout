@@ -1,26 +1,40 @@
-import socket                                         
+import socket 
+import threading
 
-# create a socket object
-serversocket = socket.socket(
-	        socket.AF_INET, socket.SOCK_STREAM) 
+HEADER = 1024
+PORT = 5050
+SERVER = socket.gethostbyname(socket.gethostname())
+ADDR = (SERVER, PORT)
+FORMAT = 'utf-8'
+DISCONNECT_MESSAGE = "!DISCONNECT"
 
-# get local machine name
-host = socket.gethostname()                           
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server.bind(ADDR)
 
-port = 9999                                           
+def handle_client(conn, addr):
+    print(f"[NEW CONNECTION] {addr} connected.")
 
-# bind to the port
-serversocket.bind((host, port))                                  
+    connected = True
+    while connected:
+        # msg_length = conn.recv(HEADER).decode(FORMAT)
+        # if msg_length:
+        #     msg_length = int(msg_length)
+        msg = conn.recv(HEADER).decode(FORMAT)
+        if msg == DISCONNECT_MESSAGE:
+            connected = False
+        conn.send(msg.encode(FORMAT))
 
-# queue up to 5 requests
-serversocket.listen(5)                                           
+    conn.close()   
 
-while True:
-   # establish a connection
-   clientsocket,addr = serversocket.accept()      
+def start():
+    server.listen()
+    print(f"[LISTENING] Server is listening on {SERVER}")
+    while True:
+        conn, addr = server.accept()
+        thread = threading.Thread(target=handle_client, args=(conn, addr))
+        thread.start()
+        print(f"[ACTIVE CONNECTIONS] {threading.activeCount() - 1}")
 
-   print("Got a connection from %s" % str(addr))
-    
-   msg = 'Thank you for connecting'+ "\r\n"
-   clientsocket.send(msg.encode('ascii'))
-   clientsocket.close()
+
+print("[STARTING] server is starting...")
+start()
