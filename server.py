@@ -30,15 +30,19 @@ client_names = []
 def clientthread(conn, addr):
 
 	# sends a message to the client whose user object is conn
-	conn.send("Welcome to this chatroom!".encode(FORMAT))
+	# conn.send(f"Hola {user_name}!! Hope you brought some pizzas.".encode(FORMAT))
+	
+	conn.send(f"Hola!! Hope you brought some pizzas.".encode(FORMAT))
+	user_name = conn.recv(2048).decode(FORMAT)
+
 
 	while True:
 			try:
-				message = conn.recv(2048)
+				message = conn.recv(2048).decode(FORMAT)
 				if message:
 					print ("<" + addr[0] + "> " + message)
 					# Calls broadcast function to send message to all
-					message_to_send =( "<" + addr[0] + "> " + message).encode(FORMAT)
+					message_to_send =( "<" + user_name + "> " + message).encode(FORMAT)
 					broadcast(message_to_send, conn)
 
 				else:
